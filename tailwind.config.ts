@@ -5,11 +5,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#262521",
-        paper: "#f8f6f1",
-        lilac: "#8b78bc",
-        "soft-lilac": "#eee9f5",
-        terracotta: "#c8785b",
+        ink: "#0A3A23",
+        paper: "#f7f7ef",
+        forest: "#0A3A23",
+        sage: "#688763",
+        "soft-sage": "#e9eee5",
       },
       fontFamily: {
         sans: ["var(--font-body)", "sans-serif"],

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, Montserrat_Alternates } from "next/font/google";
+import { Archivo_Black, Manrope } from "next/font/google";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -8,9 +8,9 @@ const manrope = Manrope({
   display: "swap",
 });
 
-const montserratAlternates = Montserrat_Alternates({
+const archivoBlack = Archivo_Black({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "400",
   variable: "--font-display",
   display: "swap",
 });
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${manrope.variable} ${montserratAlternates.variable}`}>{children}</body>
+      <body className={`${manrope.variable} ${archivoBlack.variable}`}>{children}</body>
     </html>
   );
 }

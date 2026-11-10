@@ -5,7 +5,10 @@
 :root {
   color-scheme: light;
   --font-body: "Manrope";
-  --font-display: "Montserrat Alternates";
+  --font-display: "Archivo Black";
+  --color-forest: #0a3a23;
+  --color-sage: #688763;
+  --color-cream: #f7f7ef;
 }
 
 * {
@@ -13,12 +16,12 @@
 }
 
 html {
-  background: #e7ddd3;
+  background: #dce5d8;
 }
 
 body {
   margin: 0;
-  color: #262521;
+  color: var(--color-forest);
   font-family: var(--font-body), sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -33,36 +36,36 @@ button {
 }
 
 ::selection {
-  color: #262521;
-  background: #e7d6ae;
+  color: #fffdf2;
+  background: var(--color-sage);
 }
 
 .app-shell {
   min-height: 100vh;
-  padding: 28px;
-  background: radial-gradient(ellipse at 2% 5%, rgba(245, 231, 218, 0.9), transparent 34%), #e7ddd3;
+  padding: 20px;
+  background: radial-gradient(ellipse at 2% 5%, rgba(247, 247, 239, 0.9), transparent 34%), #dce5d8;
 }
 
 .app-frame {
-  width: min(1440px, 100%);
-  min-height: calc(100vh - 56px);
+  width: min(1360px, 100%);
+  min-height: calc(100vh - 40px);
   margin: auto;
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr) 310px;
+  grid-template-columns: 76px minmax(0, 1fr);
   overflow: hidden;
-  border: 1px solid rgba(69, 57, 48, 0.08);
+  border: 1px solid rgba(10, 58, 35, 0.1);
   border-radius: 28px;
-  background: #fbfaf7;
-  box-shadow: 0 24px 80px rgba(67, 54, 43, 0.1);
+  background: var(--color-cream);
+  box-shadow: 0 24px 80px rgba(10, 58, 35, 0.1);
 }
 
 .sidebar {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 24px 12px;
-  background: #f3efe8;
+  gap: 10px;
+  padding: 20px 10px;
+  background: #edf0e7;
 }
 
 .side-link {
@@ -70,7 +73,7 @@ button {
   width: 46px;
   height: 46px;
   place-items: center;
-  color: #8d877f;
+  color: #71806d;
   border: 0;
   border-radius: 16px;
   background: transparent;
@@ -82,25 +85,19 @@ button {
 }
 
 .side-link:hover {
-  color: #5c4d81;
-  background: #ebe5f2;
+  color: var(--color-forest);
+  background: #dce7d8;
   transform: translateY(-1px);
 }
 
 .side-link.active {
-  color: #69578e;
-  background: #e8e1f0;
+  color: var(--color-forest);
+  background: #dce7d8;
 }
 
 .main-area {
   min-width: 0;
-  padding: 28px 34px 32px;
-}
-
-.right-rail {
-  padding: 28px 22px;
-  background: #f6f3ed;
-  border-left: 1px solid #eeebe5;
+  padding: 24px clamp(22px, 3vw, 36px) 28px;
 }
 
 .search-field {
@@ -109,10 +106,11 @@ button {
   gap: 10px;
   height: 48px;
   padding: 0 16px;
-  border: 1px solid #eeeae2;
+  border: 1px solid #e4e9df;
   border-radius: 999px;
-  background: #f6f3ed;
-  color: #8c867e;
+  background: #f0f2e9;
+  color: #71806d;
+  width: 100%;
 }
 
 .search-field input {
@@ -121,17 +119,17 @@ button {
   outline: 0;
   border: 0;
   background: transparent;
-  color: #34312d;
+  color: var(--color-forest);
   font-size: 13px;
 }
 
 .search-field input::placeholder {
-  color: #a7a198;
+  color: #879282;
 }
 
 .choice-card {
-  border: 1px solid #eeebe5;
-  background: #fffefa;
+  border: 1px solid #e4e9df;
+  background: #fffef8;
   transition:
     border-color 180ms ease,
     box-shadow 180ms ease,
@@ -140,14 +138,14 @@ button {
 
 .choice-card:hover {
   transform: translateY(-2px);
-  border-color: #b7a9ce;
-  box-shadow: 0 8px 24px rgba(79, 63, 106, 0.08);
+  border-color: #91a98c;
+  box-shadow: 0 8px 24px rgba(10, 58, 35, 0.08);
 }
 
 .choice-card.selected {
-  border-color: #8b78bc;
-  background: #f6f2fa;
-  box-shadow: 0 0 0 2px rgba(139, 120, 188, 0.12);
+  border-color: var(--color-sage);
+  background: #edf2e9;
+  box-shadow: 0 0 0 2px rgba(104, 135, 99, 0.16);
 }
 
 .book-cover {
@@ -234,10 +232,10 @@ button {
 
 @media (max-width: 1100px) {
   .app-shell {
-    padding: 16px;
+    padding: 14px;
   }
   .app-frame {
-    min-height: calc(100vh - 32px);
+    min-height: calc(100vh - 28px);
     grid-template-columns: 72px minmax(0, 1fr);
   }
   .right-rail {
@@ -251,7 +249,7 @@ button {
 @media (max-width: 680px) {
   .app-shell {
     padding: 0;
-    background: #fbfaf7;
+    background: var(--color-cream);
   }
   .app-frame {
     min-height: 100vh;
@@ -268,8 +266,8 @@ button {
     justify-content: space-around;
     gap: 4px;
     padding: 9px 10px calc(9px + env(safe-area-inset-bottom));
-    border-top: 1px solid #efebe5;
-    background: rgba(251, 250, 247, 0.96);
+    border-top: 1px solid #e4e9df;
+    background: rgba(247, 247, 239, 0.96);
     backdrop-filter: blur(14px);
   }
   .side-link {
@@ -277,9 +275,70 @@ button {
     height: 44px;
   }
   .main-area {
-    padding: 20px 18px 102px;
+    padding: 16px 16px calc(88px + env(safe-area-inset-bottom));
   }
   .cover-title {
     font-size: 17px;
   }
+}
+
+/* Keep the existing utility-class palette consistent with the new brand colors. */
+[class~="bg-[#78669f]"],
+[class~="bg-[#8b78bc]"] {
+  background-color: var(--color-forest);
+}
+
+[class~="hover:bg-[#655489]"]:hover {
+  background-color: #052d1a;
+}
+
+[class~="bg-[#f0eaf6]"],
+[class~="bg-[#e9e2f2]"],
+[class~="bg-[#f4f0f8]"],
+[class~="bg-[#f6f2fa]"],
+[class~="bg-[#e8e1f0]"],
+[class~="bg-[#ebe5f2]"],
+[class~="bg-[#e5dcef]"],
+[class~="bg-[#f2eef6]"],
+[class~="bg-[#e9e3ef]"] {
+  background-color: #e9eee5;
+}
+
+[class~="bg-[#faf8fc]"] {
+  background-color: #f1f4ec;
+}
+
+[class~="text-[#78669f]"],
+[class~="text-[#655489]"],
+[class~="text-[#594879]"],
+[class~="text-[#6e5b97]"],
+[class~="text-[#735f99]"],
+[class~="text-[#675386]"],
+[class~="text-[#736583]"],
+[class~="text-[#8571ac]"],
+[class~="text-[#b18a59]"],
+[class~="text-[#69578e]"],
+[class~="text-[#5c4d81]"],
+[class~="hover:text-[#655489]"]:hover,
+[class~="hover:text-[#594879]"]:hover {
+  color: var(--color-forest);
+}
+
+[class~="border-[#8b78bc]"],
+[class~="border-[#d8cce8]"],
+[class~="hover:border-[#b9a7d2]"]:hover,
+[class~="hover:border-[#cfc5db]"]:hover {
+  border-color: var(--color-sage);
+}
+
+[class~="border-[#d9d0e5]"] {
+  border-color: #cbd9c7;
+}
+
+[class~="border-t-[#78669f]"] {
+  border-top-color: var(--color-forest);
+}
+
+[class~="focus-visible:ring-[#9a85bd]"]:focus-visible {
+  --tw-ring-color: var(--color-sage);
 }
