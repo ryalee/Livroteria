@@ -12,6 +12,7 @@ import {
   Compass,
   Heart,
   Library,
+  RotateCcw,
   Search,
   Sparkles,
   Sun,
@@ -644,10 +645,11 @@ export default function Home() {
                             : "Um encontro para o seu momento"}
                         </span>
                         <button
-                          className="text-xs font-medium text-[#81738f] transition hover:text-[#554274]"
+                          className="inline-flex items-center gap-2 rounded-full border border-[#d8cce8] bg-white px-4 py-2.5 text-xs font-semibold text-[#675386] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b9a7d2] hover:bg-[#faf8fc] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9a85bd] focus-visible:ring-offset-2"
                           onClick={restart}
                           type="button"
                         >
+                          <RotateCcw size={14} strokeWidth={2} />
                           Refazer minha curadoria
                         </button>
                       </div>
@@ -669,6 +671,16 @@ export default function Home() {
                           <p className="mt-4 max-w-lg text-sm leading-6 text-[#6f6877]">
                             {recommendations[0].description}
                           </p>
+                          {recommendations[0].descriptionEnglish && (
+                            <div className="mt-3 max-w-lg rounded-2xl border border-[#e9e3ef] bg-white/70 p-4">
+                              <p className="text-xs font-semibold text-[#736583]">
+                                Descrição em inglês
+                              </p>
+                              <p className="mt-1.5 text-sm leading-6 text-[#81798a]">
+                                {recommendations[0].descriptionEnglish}
+                              </p>
+                            </div>
+                          )}
                           <div className="mt-5 flex flex-wrap items-center gap-3">
                             <StoreLinks book={recommendations[0]} />
                             <button

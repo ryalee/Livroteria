@@ -3,12 +3,14 @@ export type Book = {
   title: string;
   author: string;
   description: string;
+  descriptionEnglish?: string;
   genre: string;
   mood: string[];
   styles: string[];
   pace: string[];
   cover: string;
   mark: string;
+  language?: string;
   categories?: string[];
   coverUrl?: string;
   infoLink?: string;
