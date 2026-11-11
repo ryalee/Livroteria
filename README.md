@@ -2,6 +2,8 @@
 
 Livroteria é um recomendador de livros que combina as preferências de leitura e o estado emocional do usuário para sugerir títulos. As informações dos livros vêm da API do Google Books, com preferência por edições em português quando disponíveis.
 
+Os estilos escolhidos, o humor e o ritmo de leitura são associados a categorias literárias. Para recomendações do catálogo, o app busca essas categorias no Google Books, combina os resultados e classifica os títulos. Para recomendações da estante, aplica a mesma seleção de categorias aos gêneros e categorias dos livros salvos.
+
 ## Funcionalidades
 
 - **Curadoria personalizada:** escolha estilos de leitura, ritmo e humor para receber recomendações.
@@ -11,21 +13,15 @@ Livroteria é um recomendador de livros que combina as preferências de leitura 
 - **Links para leitura:** acesse resultados do livro no Skeelo e no Google Books.
 - **Interface responsiva:** navegação adaptada para telas grandes e dispositivos móveis.
 
-Os livros da estante são armazenados no `localStorage` do navegador. Não é necessário criar uma conta, mas os dados ficam apenas naquele navegador e dispositivo; não há sincronização entre usuários ou dispositivos.
+Os livros da estante são armazenados no `localStorage` do navegador. Não é necessário criar uma conta, mas os dados ficam apenas naquele navegador e dispositivo; **NÃO** há sincronização entre usuários ou dispositivos.
 
 ## Stack
 
-- [Next.js](https://nextjs.org/) 14 com App Router
-- [React](https://react.dev/) 18
+- [Next.js](https://nextjs.org/)
+- [React](https://react.dev/) 
 - [TypeScript](https://www.typescriptlang.org/)
+- [PostgreSQL no Supabase](https://supabase.com/)
 - [Tailwind CSS](https://tailwindcss.com/)
-- [Framer Motion](https://www.framer.com/motion/) para animações
-- [Lucide](https://lucide.dev/) para ícones
+- [Framer Motion](https://www.framer.com/motion/)
+- [Lucide](https://lucide.dev/)
 - [Google Books API](https://developers.google.com/books)
-
-Os títulos usam Archivo Black e a interface usa Manrope, com uma paleta inspirada em verde-floresta (`#0A3A23`) e verde-sálvia (`#688763`).
-
-
-## Como funcionam as recomendações
-
-Na curadoria, os estilos escolhidos, o humor e o ritmo de leitura são associados a categorias literárias. Para recomendações do catálogo, o app busca essas categorias no Google Books, combina os resultados e classifica os títulos. Para recomendações da estante, aplica a mesma seleção de categorias aos gêneros e categorias dos livros salvos.
