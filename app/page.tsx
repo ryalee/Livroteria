@@ -1,12 +1,13 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Bookmark, BookHeart, BookOpen, Compass, Search, Sparkles, Sun } from "lucide-react";
+import { Bookmark, BookHeart, BookOpen, Compass, Search, Sun } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Book } from "@/lib/books";
 import { BookSearchResults } from "@/app/components/book-search-results";
 import { Answers, CurationForm, RecommendationSource } from "@/app/components/curation-form";
 import { InspirationSection, RecommendationResult } from "@/app/components/recommendation-result";
+import Image from "next/image";
 
 type View = "inicio" | "estante" | "descobrir";
 
@@ -197,18 +198,23 @@ export default function Home() {
   return (
     <main className="app-shell">
       <div className="app-frame">
-        <nav className="sidebar" aria-label="Navegação principal">
+        <nav className="sidebar">
           <button
-            className="mb-8 grid h-11 w-11 place-items-center rounded-2xl bg-[#78669f] text-white shadow-sm"
-            aria-label="Livroteria, início"
+            className="mb-8 grid h-11 w-11 place-items-center rounded-xl shadow-sm"
             onClick={() => {
               setView("inicio");
               setSearch("");
             }}
             type="button"
           >
-            <BookHeart size={20} strokeWidth={1.8} />
+            <Image
+              src="/logo.png"
+              alt="Logo Livroteria"
+              width={40}
+              height={40}
+            />
           </button>
+
           {navItems.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -224,9 +230,6 @@ export default function Home() {
               <Icon size={19} strokeWidth={1.8} />
             </button>
           ))}
-          <div className="mt-auto hidden h-11 w-11 place-items-center rounded-full bg-[#e6ddcf] text-sm font-semibold text-[#89796a] sm:grid">
-            L.
-          </div>
         </nav>
 
         <section className="main-area">
@@ -242,14 +245,6 @@ export default function Home() {
                 }}
               />
             </label>
-            <button
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#eeeae2] bg-white text-[#777068] transition hover:text-[#78669f]"
-              type="button"
-              onClick={() => setView("estante")}
-              aria-label={`Minha estante, ${shelfBooks.length} livros salvos`}
-            >
-              <Bookmark size={18} />
-            </button>
           </header>
 
           {shelfError && (
@@ -267,7 +262,7 @@ export default function Home() {
                 <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
                   <div>
                     <p className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#92877c]">
-                      <Sparkles size={13} className="text-[#b18a59]" /> Seu espaço de leitura
+                      Seu espaço de leitura
                     </p>
                     <h1 className="font-display text-[clamp(29px,4vw,42px)] leading-[1.08] tracking-[-0.035em] text-[#312e2a]">
                       Um livro para o seu <span className="text-[#8571ac]">agora.</span>
@@ -276,9 +271,6 @@ export default function Home() {
                       A leitura certa encontra você no momento certo.
                     </p>
                   </div>
-                  <span className="rounded-full bg-[#f0ece5] px-3 py-1.5 text-[11px] font-medium text-[#857c72]">
-                    feito para você, com carinho
-                  </span>
                 </div>
 
                 {recommendations.length ? (
@@ -346,15 +338,15 @@ export default function Home() {
               </motion.div>
             )}
           </AnimatePresence>
-
-          <footer className="mt-8 flex items-center justify-between border-t border-[#eeeae2] pt-4 text-[10px] text-[#aaa197]">
-            <span>
-              Livroteria <span className="mx-1">·</span> um capítulo de cada vez
-            </span>
-            <span>feito para ler com calma</span>
-          </footer>
         </section>
+
       </div>
+
+      <footer className="mt-8 flex w-full items-center justify-center border-t border-[#eeeae2] pt-4 font-bold text-[14px] text-[#aaa197]">
+        <span>
+          Livroteria <span className="mx-1">·</span> Desenvolvido por <a href="https://www.linkedin.com/in/ryan-alecrim-sodre/" target="_blank" className="hover:text-[#78669f] duration-300">Ryan Alecrim Sodre</a>
+        </span>
+      </footer>
     </main>
   );
 }

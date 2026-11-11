@@ -2,7 +2,7 @@
 
 import { Dispatch, SetStateAction } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, Compass, Library, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Compass, Library } from "lucide-react";
 import { Book, moods } from "@/lib/books";
 
 export type Answers = { styles: string[]; pace: string; mood: string };
@@ -86,12 +86,6 @@ export function CurationForm({
   return (
     <section className="overflow-hidden rounded-[24px] border border-[#eeeae2] bg-white">
       <div className="flex items-center justify-between border-b border-[#f0ede7] px-6 py-4">
-        <div className="flex items-center gap-2">
-          <span className="grid h-7 w-7 place-items-center rounded-full bg-[#f0eaf6] text-[#78669f]">
-            <Sparkles size={14} />
-          </span>
-          <span className="text-xs font-semibold text-[#68615a]">Sua curadoria pessoal</span>
-        </div>
         <span className="text-xs text-[#a19a91]">
           0{step} <span className="mx-1">/</span> 02
         </span>
@@ -288,7 +282,7 @@ export function CurationForm({
                   {isLoading ? (
                     <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
                   ) : (
-                    <Sparkles size={14} />
+                    <Check size={14} />
                   )}
                 </button>
               </div>

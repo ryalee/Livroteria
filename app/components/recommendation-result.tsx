@@ -37,7 +37,6 @@ export function RecommendationResult({
         <div className="absolute -right-10 -top-20 h-56 w-56 rounded-full bg-[#e5dcef] opacity-70 blur-2xl" />
         <div className="relative flex flex-wrap items-center justify-between gap-3">
           <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-[11px] font-semibold text-[#735f99]">
-            <Sparkles size={13} />
             {recommendationSource === "shelf"
               ? "Uma leitura da sua estante"
               : "Um encontro para o seu momento"}
@@ -48,7 +47,7 @@ export function RecommendationResult({
             type="button"
           >
             <RotateCcw size={14} strokeWidth={2} />
-            Refazer minha curadoria
+            Refazer
           </button>
         </div>
         <div className="relative mt-4 grid items-center gap-6 sm:grid-cols-[minmax(0,1fr)_180px]">
