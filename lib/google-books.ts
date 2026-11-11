@@ -6,18 +6,34 @@ type GoogleVolume = {
     title?: string;
     subtitle?: string;
     authors?: string[];
+    publisher?: string;
+    publishedDate?: string;
     description?: string;
+    industryIdentifiers?: Array<{
+      type: string;
+      identifier: string;
+    }>;
+    readingModes?: {
+      text?: boolean;
+      image?: boolean;
+    };
+    pageCount?: number;
+    printType?: string;
     categories?: string[];
+    averageRating?: number;
+    ratingsCount?: number;
     imageLinks?: {
       thumbnail?: string;
       smallThumbnail?: string;
     };
     infoLink?: string;
     previewLink?: string;
-    publishedDate?: string;
-    averageRating?: number;
-    ratingsCount?: number;
     language?: string;
+  };
+  accessInfo?: {
+    publicDomain?: boolean;
+    epub?: { isAvailable?: boolean };
+    pdf?: { isAvailable?: boolean };
   };
 };
 
@@ -182,6 +198,252 @@ function getHighResolutionCover(imageUrl?: string): string | undefined {
   return coverUrl.toString();
 }
 
+export type CoverQuality = {
+  score: number;
+  hasRealCover: boolean;
+  isScanned: boolean;
+};
+
+const reprintPublishers = [
+  "wentworth press",
+  "forgotten books",
+  "palala press",
+  "nabu press",
+  "legare street press",
+  "creative media partners",
+  "kessinger publishing",
+  "alpha edition",
+  "andesite press",
+  "franklin classics",
+  "arkose press",
+  "general books",
+  "rarebooksclub",
+  "scholar's choice",
+  "bibliobazaar",
+  "hansebooks",
+  "blurb",
+  "lulu",
+  "reprint",
+  "facsimile",
+  "book on demand",
+  "classic reprint",
+  "bavarian state library",
+  "british library",
+  "harvard library",
+  "bodleian",
+];
+
+const academicOrPamphletPublishers = [
+  "universidade de",
+  "faculdade de",
+  "tese de",
+  "dissertação",
+  "dissertacao",
+  "monografia",
+  "relatório",
+  "relatorio",
+  "governo do",
+  "ministério",
+  "ministerio",
+];
+
+const qualityPublishers = [
+  "companhia das letras",
+  "rocco",
+  "record",
+  "intrinseca",
+  "intrínseca",
+  "sextante",
+  "arqueiro",
+  "darkside",
+  "globo",
+  "leya",
+  "aleph",
+  "todavia",
+  "antofagica",
+  "antofágica",
+  "suma",
+  "harpercollins",
+  "planeta",
+  "galera",
+  "novo conceito",
+  "autentica",
+  "autêntica",
+  "editora 34",
+  "cosac naify",
+  "zahar",
+  "morro branco",
+  "bertrand",
+  "paralela",
+  "seguinte",
+  "bestseller",
+  "principis",
+  "pandorga",
+  "v&r",
+  "alta books",
+  "faro editorial",
+  "gutenberg",
+  "martin claret",
+  "penguin",
+  "abril",
+  "estação liberdade",
+  "estacao liberdade",
+  "l&pm",
+];
+
+const scanTitlePhrases = [
+  "(classic reprint)",
+  "primary source edition",
+  "scholar's choice edition",
+  "facsimile reprint",
+  "reprinted from",
+  "edicao fac-similar",
+  "edição fac-similar",
+  "edicao fac-simile",
+  "edição fac-símile",
+  "reprodução fac-similar",
+  "reproducao fac-similar",
+];
+
+const reprintDisclaimers = [
+  "this work has been selected by scholars",
+  "this is a reproduction of a book published before",
+  "this work is in the public domain",
+  "this book is a reproduction of an important historical work",
+  "this historic book may have numerous typos",
+  "imperfections such as marks, notations",
+  "imperfections such as missing or blurred pages",
+  "digitized by google",
+  "digitally preserved",
+  "scanned copy of the original",
+  "obra selecionada por estudiosos",
+  "reprodução de um livro histórico",
+  "esta obra está em domínio público",
+];
+
+export function evaluateCoverQuality(volume: GoogleVolume): CoverQuality {
+  const info = volume.volumeInfo;
+  if (!info) return { score: -100, hasRealCover: false, isScanned: false };
+
+  const rawCover = info.imageLinks?.thumbnail ?? info.imageLinks?.smallThumbnail;
+  if (!rawCover) {
+    return { score: -80, hasRealCover: false, isScanned: false };
+  }
+
+  let score = 0;
+  let isScanned = false;
+
+  const readingModes = info.readingModes;
+  if (readingModes) {
+    if (readingModes.text === false && readingModes.image === true) {
+      score -= 60;
+      isScanned = true;
+    } else if (readingModes.text === true) {
+      score += 30;
+    }
+  }
+
+  const accessInfo = volume.accessInfo;
+  if (accessInfo) {
+    if (accessInfo.publicDomain === true) {
+      score -= 20;
+      if (accessInfo.pdf?.isAvailable === true && accessInfo.epub?.isAvailable === false) {
+        score -= 40;
+        isScanned = true;
+      }
+    }
+    if (accessInfo.epub?.isAvailable === true) {
+      score += 15;
+    }
+  }
+
+  const identifiers = info.industryIdentifiers ?? [];
+  const hasIsbn13 = identifiers.some((id) => id.type === "ISBN_13");
+  const hasIsbn10 = identifiers.some((id) => id.type === "ISBN_10");
+  const onlyOther = identifiers.length > 0 && identifiers.every((id) => id.type === "OTHER");
+
+  if (hasIsbn13) {
+    score += 25;
+  } else if (hasIsbn10) {
+    score += 15;
+  }
+
+  if (onlyOther) {
+    score -= 40;
+    isScanned = true;
+  } else if (identifiers.length === 0) {
+    score -= 15;
+  }
+
+  const publisher = (info.publisher ?? "").toLowerCase().trim();
+  const publishedYear = info.publishedDate ? parseInt(info.publishedDate.slice(0, 4), 10) : null;
+
+  if (reprintPublishers.some((p) => publisher.includes(p))) {
+    score -= 60;
+    isScanned = true;
+  } else if (academicOrPamphletPublishers.some((p) => publisher.includes(p))) {
+    score -= 40;
+    isScanned = true;
+  } else if (
+    publisher.includes("oxford university press") &&
+    publishedYear &&
+    publishedYear < 1980
+  ) {
+    score -= 50;
+    isScanned = true;
+  } else if (qualityPublishers.some((p) => publisher.includes(p))) {
+    score += 35;
+  } else if (publisher.length >= 3) {
+    score += 10;
+  }
+
+  const fullTitle = `${info.title ?? ""} ${info.subtitle ?? ""}`.toLowerCase();
+  if (scanTitlePhrases.some((phrase) => fullTitle.includes(phrase))) {
+    score -= 50;
+    isScanned = true;
+  }
+
+  const desc = (info.description ?? "").toLowerCase();
+  if (reprintDisclaimers.some((phrase) => desc.includes(phrase))) {
+    score -= 60;
+    isScanned = true;
+  }
+
+  if (info.description && info.description.length > 120) {
+    score += 15;
+  } else if (!info.description) {
+    score -= 15;
+  }
+
+  if (publishedYear && !isNaN(publishedYear)) {
+    if (publishedYear >= 2010) {
+      score += 20;
+    } else if (publishedYear >= 1990) {
+      score += 10;
+    } else if (publishedYear < 1970) {
+      score -= 35;
+      isScanned = true;
+    }
+  }
+
+  if (info.ratingsCount && info.ratingsCount > 0) {
+    score += Math.min(30, info.ratingsCount * 5);
+  }
+  if (info.averageRating && info.averageRating >= 3.5) {
+    score += 10;
+  }
+
+  if (info.pageCount && info.pageCount >= 60 && info.pageCount <= 1200) {
+    score += 10;
+  } else if (info.pageCount && info.pageCount < 25) {
+    score -= 20;
+  }
+
+  const hasRealCover = Boolean(rawCover) && !isScanned && score >= 10;
+
+  return { score, hasRealCover, isScanned };
+}
+
 export async function searchGoogleBooks(query: string, maxResults = 20): Promise<Book[]> {
   const url = new URL("https://www.googleapis.com/books/v1/volumes");
   url.searchParams.set("q", query);
@@ -221,7 +483,7 @@ export async function searchGoogleBooks(query: string, maxResults = 20): Promise
   );
   const preferredVolumes = portugueseVolumes.length ? portugueseVolumes : volumes;
 
-  return preferredVolumes.map((volume, index) => {
+  const mappedBooks = preferredVolumes.map((volume, index) => {
     const info = volume.volumeInfo!;
     const isPortuguese = isPortugueseEdition(info.language);
     const rawDescription = info.description?.trim();
@@ -231,6 +493,7 @@ export async function searchGoogleBooks(query: string, maxResults = 20): Promise
     const rawCover = info.imageLinks?.thumbnail ?? info.imageLinks?.smallThumbnail;
     const coverUrl = getHighResolutionCover(rawCover);
     const title = info.subtitle ? `${info.title}: ${info.subtitle}` : info.title!;
+    const quality = evaluateCoverQuality(volume);
 
     return {
       id: volume.id,
@@ -256,6 +519,20 @@ export async function searchGoogleBooks(query: string, maxResults = 20): Promise
       ...(info.publishedDate ? { publishedDate: info.publishedDate } : {}),
       ...(info.averageRating !== undefined ? { averageRating: info.averageRating } : {}),
       ...(info.ratingsCount !== undefined ? { ratingsCount: info.ratingsCount } : {}),
+      ...(info.publisher ? { publisher: info.publisher } : {}),
+      ...(info.pageCount ? { pageCount: info.pageCount } : {}),
+      hasRealCover: quality.hasRealCover,
+      isScanned: quality.isScanned,
+      coverQualityScore: quality.score,
     };
+  });
+
+  return mappedBooks.sort((a, b) => {
+    const aReal = a.hasRealCover && !a.isScanned && Boolean(a.coverUrl);
+    const bReal = b.hasRealCover && !b.isScanned && Boolean(b.coverUrl);
+    if (aReal !== bReal) {
+      return aReal ? -1 : 1;
+    }
+    return (b.coverQualityScore ?? 0) - (a.coverQualityScore ?? 0);
   });
 }

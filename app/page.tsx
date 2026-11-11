@@ -207,12 +207,7 @@ export default function Home() {
             }}
             type="button"
           >
-            <Image
-              src="/logo.png"
-              alt="Logo Livroteria"
-              width={40}
-              height={40}
-            />
+            <Image src="/logo.png" alt="Logo Livroteria" width={40} height={40} />
           </button>
 
           {navItems.map(({ id, label, icon: Icon }) => (
@@ -339,12 +334,18 @@ export default function Home() {
             )}
           </AnimatePresence>
         </section>
-
       </div>
 
       <footer className="mt-8 flex w-full items-center justify-center border-t border-[#eeeae2] pt-4 font-bold text-[14px] text-[#aaa197]">
         <span>
-          Livroteria <span className="mx-1">·</span> Desenvolvido por <a href="https://www.linkedin.com/in/ryan-alecrim-sodre/" target="_blank" className="hover:text-[#78669f] duration-300">Ryan Alecrim Sodre</a>
+          Livroteria <span className="mx-1">·</span> Desenvolvido por{" "}
+          <a
+            href="https://www.linkedin.com/in/ryan-alecrim-sodre/"
+            target="_blank"
+            className="hover:text-[#78669f] duration-300"
+          >
+            Ryan Alecrim Sodre
+          </a>
         </span>
       </footer>
     </main>

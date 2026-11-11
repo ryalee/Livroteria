@@ -18,6 +18,11 @@ export type Book = {
   publishedDate?: string;
   averageRating?: number;
   ratingsCount?: number;
+  publisher?: string;
+  pageCount?: number;
+  hasRealCover?: boolean;
+  isScanned?: boolean;
+  coverQualityScore?: number;
 };
 
 export const moods = [

@@ -108,7 +108,20 @@ function rankShelfBooks(shelfBooks: Book[], subjects: Map<string, number>) {
         }
       }
 
-      return { book, score };
+      const qualityScore = book.coverQualityScore ?? (book.coverUrl ? 20 : 0);
+      const isScanned = book.isScanned ?? false;
+      const hasRealCover = book.hasRealCover ?? Boolean(book.coverUrl && !isScanned);
+
+      let multiplier = 1.0;
+      if (hasRealCover && !isScanned && book.coverUrl) {
+        multiplier = 2.5;
+      } else if (isScanned) {
+        multiplier = 0.1;
+      } else if (!book.coverUrl) {
+        multiplier = 0.5;
+      }
+
+      return { book, score: (score * 10 + qualityScore) * multiplier };
     })
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
@@ -176,7 +189,7 @@ export async function POST(request: Request) {
     const resultsBySubject = await Promise.all(
       [...subjects].map(async ([subject, weight]) => ({
         weight,
-        books: await searchGoogleBooks(`subject:${subject}`, 12),
+        books: await searchGoogleBooks(`subject:${subject}`, 24),
       })),
     );
 
@@ -184,13 +197,40 @@ export async function POST(request: Request) {
     for (const { weight, books } of resultsBySubject) {
       books.forEach((book, index) => {
         const existing = scores.get(book.id);
-        const score = weight / (index + 1);
-        scores.set(book.id, { book, score: (existing?.score ?? 0) + score });
+        const positionScore = weight / (index + 1);
+        scores.set(book.id, { book, score: (existing?.score ?? 0) + positionScore });
       });
     }
 
-    const recommendations = [...scores.values()]
-      .sort((a, b) => b.score - a.score)
+    const scoredCandidates = [...scores.values()].map(({ book, score: subjectScore }) => {
+      const qualityScore = book.coverQualityScore ?? 0;
+      let multiplier = 1.0;
+
+      if (book.hasRealCover && !book.isScanned && Boolean(book.coverUrl)) {
+        multiplier = 3.0;
+      } else if (book.isScanned) {
+        multiplier = 0.05;
+      } else if (!book.coverUrl) {
+        multiplier = 0.2;
+      }
+
+      const totalScore = (subjectScore * 10 + qualityScore) * multiplier;
+      return { book, totalScore };
+    });
+
+    const realCoverCandidates = scoredCandidates
+      .filter(({ book }) => book.hasRealCover && !book.isScanned && Boolean(book.coverUrl))
+      .sort((a, b) => b.totalScore - a.totalScore);
+
+    const otherCandidates = scoredCandidates
+      .filter(({ book }) => !realCoverCandidates.some((r) => r.book.id === book.id))
+      .sort((a, b) => b.totalScore - a.totalScore);
+
+    const recommendations = (
+      realCoverCandidates.length >= 3
+        ? realCoverCandidates
+        : [...realCoverCandidates, ...otherCandidates]
+    )
       .slice(0, 3)
       .map(({ book }) => book);
 
