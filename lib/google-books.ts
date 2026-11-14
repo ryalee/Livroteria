@@ -577,7 +577,7 @@ export async function searchGoogleBooks(query: string, maxResults = 20): Promise
       title: book.title,
       isbn13: book.isbn13,
       isbn10: book.isbn10,
-    }))
+    })),
   );
 
   return mappedBooks.sort((a, b) => {
