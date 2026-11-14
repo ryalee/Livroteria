@@ -173,12 +173,18 @@ function isPortugueseDescription(description: string, editionLanguage?: string):
     .toLowerCase()
     .match(/[\p{L}]+/gu);
 
-  if (!words?.length) return isPortugueseEdition(editionLanguage);
+  if (!words?.length) {
+    return isPortugueseEdition(editionLanguage);
+  }
 
   const portugueseScore = words.filter((word) => portugueseDescriptionWords.has(word)).length;
+
   const englishScore = words.filter((word) => englishDescriptionWords.has(word)).length;
 
-  if (portugueseScore !== englishScore) return portugueseScore > englishScore;
+  if (portugueseScore !== englishScore) {
+    return portugueseScore > englishScore;
+  }
+
   return isPortugueseEdition(editionLanguage);
 }
 
@@ -186,6 +192,7 @@ function translateCategory(category?: string): string {
   if (!category) return "Livro";
 
   const normalizedCategory = category.split("/")[0].trim().toLowerCase();
+
   return categoryTranslations[normalizedCategory] ?? "Livro";
 }
 
@@ -193,8 +200,10 @@ function getHighResolutionCover(imageUrl?: string): string | undefined {
   if (!imageUrl) return undefined;
 
   const coverUrl = new URL(imageUrl.replace(/^http:/, "https:"));
+
   coverUrl.searchParams.set("zoom", "0");
   coverUrl.searchParams.delete("edge");
+
   return coverUrl.toString();
 }
 
@@ -323,9 +332,13 @@ const reprintDisclaimers = [
 
 export function evaluateCoverQuality(volume: GoogleVolume): CoverQuality {
   const info = volume.volumeInfo;
-  if (!info) return { score: -100, hasRealCover: false, isScanned: false };
+
+  if (!info) {
+    return { score: -100, hasRealCover: false, isScanned: false };
+  }
 
   const rawCover = info.imageLinks?.thumbnail ?? info.imageLinks?.smallThumbnail;
+
   if (!rawCover) {
     return { score: -80, hasRealCover: false, isScanned: false };
   }
@@ -334,6 +347,7 @@ export function evaluateCoverQuality(volume: GoogleVolume): CoverQuality {
   let isScanned = false;
 
   const readingModes = info.readingModes;
+
   if (readingModes) {
     if (readingModes.text === false && readingModes.image === true) {
       score -= 60;
@@ -344,20 +358,24 @@ export function evaluateCoverQuality(volume: GoogleVolume): CoverQuality {
   }
 
   const accessInfo = volume.accessInfo;
+
   if (accessInfo) {
     if (accessInfo.publicDomain === true) {
       score -= 20;
+
       if (accessInfo.pdf?.isAvailable === true && accessInfo.epub?.isAvailable === false) {
         score -= 40;
         isScanned = true;
       }
     }
+
     if (accessInfo.epub?.isAvailable === true) {
       score += 15;
     }
   }
 
   const identifiers = info.industryIdentifiers ?? [];
+
   const hasIsbn13 = identifiers.some((id) => id.type === "ISBN_13");
   const hasIsbn10 = identifiers.some((id) => id.type === "ISBN_10");
   const onlyOther = identifiers.length > 0 && identifiers.every((id) => id.type === "OTHER");
@@ -376,12 +394,15 @@ export function evaluateCoverQuality(volume: GoogleVolume): CoverQuality {
   }
 
   const publisher = (info.publisher ?? "").toLowerCase().trim();
+
   const publishedYear = info.publishedDate ? parseInt(info.publishedDate.slice(0, 4), 10) : null;
 
-  if (reprintPublishers.some((p) => publisher.includes(p))) {
+  if (reprintPublishers.some((publisherName) => publisher.includes(publisherName))) {
     score -= 60;
     isScanned = true;
-  } else if (academicOrPamphletPublishers.some((p) => publisher.includes(p))) {
+  } else if (
+    academicOrPamphletPublishers.some((publisherName) => publisher.includes(publisherName))
+  ) {
     score -= 40;
     isScanned = true;
   } else if (
@@ -391,19 +412,21 @@ export function evaluateCoverQuality(volume: GoogleVolume): CoverQuality {
   ) {
     score -= 50;
     isScanned = true;
-  } else if (qualityPublishers.some((p) => publisher.includes(p))) {
+  } else if (qualityPublishers.some((publisherName) => publisher.includes(publisherName))) {
     score += 35;
   } else if (publisher.length >= 3) {
     score += 10;
   }
 
   const fullTitle = `${info.title ?? ""} ${info.subtitle ?? ""}`.toLowerCase();
+
   if (scanTitlePhrases.some((phrase) => fullTitle.includes(phrase))) {
     score -= 50;
     isScanned = true;
   }
 
   const desc = (info.description ?? "").toLowerCase();
+
   if (reprintDisclaimers.some((phrase) => desc.includes(phrase))) {
     score -= 60;
     isScanned = true;
@@ -429,6 +452,7 @@ export function evaluateCoverQuality(volume: GoogleVolume): CoverQuality {
   if (info.ratingsCount && info.ratingsCount > 0) {
     score += Math.min(30, info.ratingsCount * 5);
   }
+
   if (info.averageRating && info.averageRating >= 3.5) {
     score += 10;
   }
@@ -446,6 +470,7 @@ export function evaluateCoverQuality(volume: GoogleVolume): CoverQuality {
 
 export async function searchGoogleBooks(query: string, maxResults = 20): Promise<Book[]> {
   const url = new URL("https://www.googleapis.com/books/v1/volumes");
+
   url.searchParams.set("q", query);
   url.searchParams.set("maxResults", String(maxResults));
   url.searchParams.set("langRestrict", "pt");
@@ -454,9 +479,13 @@ export async function searchGoogleBooks(query: string, maxResults = 20): Promise
   url.searchParams.set("orderBy", "relevance");
 
   const apiKey = process.env.GOOGLE_BOOKS_API_KEY;
-  if (apiKey) url.searchParams.set("key", apiKey);
+
+  if (apiKey) {
+    url.searchParams.set("key", apiKey);
+  }
 
   let response: Response;
+
   try {
     response = await fetch(url, { next: { revalidate: 3600 } });
   } catch {
@@ -467,8 +496,10 @@ export async function searchGoogleBooks(query: string, maxResults = 20): Promise
   }
 
   const data = (await response.json().catch(() => null)) as GoogleBooksResponse | null;
+
   if (!response.ok) {
     const message = data?.error?.message;
+
     throw new GoogleBooksError(
       message
         ? `O Google Books não conseguiu concluir a busca: ${message}`
@@ -478,21 +509,33 @@ export async function searchGoogleBooks(query: string, maxResults = 20): Promise
   }
 
   const volumes = (data?.items ?? []).filter((volume) => volume.volumeInfo?.title);
+
   const portugueseVolumes = volumes.filter((volume) =>
     isPortugueseEdition(volume.volumeInfo?.language),
   );
+
   const preferredVolumes = portugueseVolumes.length ? portugueseVolumes : volumes;
 
   const mappedBooks = preferredVolumes.map((volume, index) => {
     const info = volume.volumeInfo!;
-    const isPortuguese = isPortugueseEdition(info.language);
+    const identifiers = info.industryIdentifiers ?? [];
+
+    const isbn13 = identifiers.find((identifier) => identifier.type === "ISBN_13")?.identifier;
+
+    const isbn10 = identifiers.find((identifier) => identifier.type === "ISBN_10")?.identifier;
+
     const rawDescription = info.description?.trim();
+
     const hasPortugueseDescription = rawDescription
       ? isPortugueseDescription(rawDescription, info.language)
       : false;
+
     const rawCover = info.imageLinks?.thumbnail ?? info.imageLinks?.smallThumbnail;
+
     const coverUrl = getHighResolutionCover(rawCover);
+
     const title = info.subtitle ? `${info.title}: ${info.subtitle}` : info.title!;
+
     const quality = evaluateCoverQuality(volume);
 
     return {
@@ -524,15 +567,28 @@ export async function searchGoogleBooks(query: string, maxResults = 20): Promise
       hasRealCover: quality.hasRealCover,
       isScanned: quality.isScanned,
       coverQualityScore: quality.score,
+      ...(isbn13 ? { isbn13 } : {}),
+      ...(isbn10 ? { isbn10 } : {}),
     };
   });
+
+  console.table(
+    mappedBooks.map((book) => ({
+      title: book.title,
+      isbn13: book.isbn13,
+      isbn10: book.isbn10,
+      skoobId: book.skoobId,
+    })),
+  );
 
   return mappedBooks.sort((a, b) => {
     const aReal = a.hasRealCover && !a.isScanned && Boolean(a.coverUrl);
     const bReal = b.hasRealCover && !b.isScanned && Boolean(b.coverUrl);
+
     if (aReal !== bReal) {
       return aReal ? -1 : 1;
     }
+
     return (b.coverQualityScore ?? 0) - (a.coverQualityScore ?? 0);
   });
 }

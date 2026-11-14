@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Heart, RotateCcw, Sparkles } from "lucide-react";
+import { ChevronRight, Heart, RotateCcw } from "lucide-react";
 import { Book, moods } from "@/lib/books";
 import { BookCover, MiniBook, StoreLinks } from "@/app/components/book-display";
 import { RecommendationSource } from "@/app/components/curation-form";
@@ -30,6 +30,21 @@ export function RecommendationResult({
   const book = books[0];
 
   if (!book) return null;
+
+  console.log({
+    BookCover,
+    MiniBook,
+    StoreLinks,
+  });
+
+  console.log("Componentes:", {
+    BookCover: typeof BookCover,
+    MiniBook: typeof MiniBook,
+    StoreLinks: typeof StoreLinks,
+    ChevronRight: typeof ChevronRight,
+    Heart: typeof Heart,
+    RotateCcw: typeof RotateCcw,
+  });
 
   return (
     <section className="overflow-hidden rounded-[24px] border border-[#eeeae2] bg-white">

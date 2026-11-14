@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, Compass, Library } from "lucide-react";
 import { Book, moods } from "@/lib/books";
+import Image from "next/image";
 
 export type Answers = { styles: string[]; pace: string; mood: string };
 export type RecommendationSource = "catalog" | "shelf";
@@ -26,25 +27,25 @@ const styleChoices = [
     id: "reflexivo",
     title: "Que me fazem pensar",
     detail: "Histórias com camadas e ideias",
-    icon: "✧",
+    icon: "/pensando.png",
   },
   {
     id: "imaginativo",
     title: "Que me levam longe",
     detail: "Fantasia, mundos e descobertas",
-    icon: "☾",
+    icon: "/fantasy.png",
   },
   {
     id: "emocional",
     title: "Que me fazem sentir",
     detail: "Personagens que ficam comigo",
-    icon: "♡",
+    icon: "/hearts.png",
   },
   {
     id: "intenso",
     title: "Que me prendem",
     detail: "Narrativas fortes e inesquecíveis",
-    icon: "↗",
+    icon: "/intense.png",
   },
 ];
 
@@ -167,7 +168,13 @@ export function CurationForm({
                       <span
                         className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl text-lg ${isSelected ? "bg-[#e9e2f2] text-[#78669f]" : "bg-[#f5f2ec] text-[#9a8974]"}`}
                       >
-                        {choice.icon}
+                        <Image
+                          src={choice.icon}
+                          alt=""
+                          width={24}
+                          height={24}
+                          className="h-6 w-6"
+                        />
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block text-[13px] font-semibold text-[#49443e]">
@@ -250,7 +257,7 @@ export function CurationForm({
                     <span
                       className={`grid h-8 w-8 place-items-center rounded-xl text-lg text-[#736554] ${mood.color}`}
                     >
-                      {mood.emoji}
+                      <Image src={mood.emoji} alt="" width={24} height={24} className="h-6 w-6" />
                     </span>
                     <span className="text-[11px] font-semibold leading-tight text-[#5a554e]">
                       {mood.label}
