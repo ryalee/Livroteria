@@ -31,7 +31,6 @@ export function BookCover({ book, className = "" }: { book: Book; className?: st
       )}
     </div>
   );
-  F;
 }
 
 export function StoreLinks({ book }: { book: Book }) {
