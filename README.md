@@ -10,7 +10,7 @@ Os estilos escolhidos, o humor e o ritmo de leitura são associados a categorias
 - **Busca no Google Books:** pesquise livros por título, autor ou gênero e consulte os dados e capas retornados pela API.
 - **Estante pessoal:** salve livros para consultar depois e peça recomendações limitadas aos títulos salvos.
 - **Descrições em português:** quando uma descrição em português não estiver disponível, o app informa isso e exibe a descrição original em inglês, se houver.
-- **Links para leitura:** acesse resultados do livro no Skeelo e no Google Books.
+- **Links para leitura:** acesse resultados do livro no Skeelo, Skoob e no Google Books.
 - **Interface responsiva:** navegação adaptada para telas grandes e dispositivos móveis.
 
 Os livros da estante são armazenados no `localStorage` do navegador. Não é necessário criar uma conta, mas os dados ficam apenas naquele navegador e dispositivo; **NÃO** há sincronização entre usuários ou dispositivos.
